@@ -1,0 +1,32 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
+
+class Solution{
+    public static void main(String args[]){
+        Scanner sc= new Scanner (System.in);
+        String s= sc.next();
+        long n=sc.nextLong();
+        long numberOfReps = n/s.length();
+        long remainder = n%s.length();
+        long total = 0;
+        for(int a = 0; a < s.length(); a++){
+            if(s.charAt(a) == 'a'){
+                total++;
+            }
+        }
+        total = total * numberOfReps;
+        for(int a = 0; a < remainder; a++){
+             if(s.charAt(a) == 'a'){
+                total++;
+            }
+        }
+        System.out.println(total);
+
+        
+    }
+}
