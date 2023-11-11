@@ -1,0 +1,51 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+    
+    private static boolean greedy(final int[] types, final int[] containers) {
+        final int n = types.length;
+        for (int i = n - 1; i >= 0; i--) {
+            if (types[i] > containers[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int q = in.nextInt();
+        for(int a0 = 0; a0 < q; a0++){
+            int n = in.nextInt();
+            int[][] M = new int[n][n];
+            for(int M_i=0; M_i < n; M_i++){
+                for(int M_j=0; M_j < n; M_j++){
+                    M[M_i][M_j] = in.nextInt();
+                }
+            }
+            final int[] types = new int[n];
+            for (int t = 0; t < n; t++) {
+                for (int i = 0; i < n; i++) {
+                    types[t] += M[i][t];
+                }
+            }
+            
+            final int[] containers = new int[n];
+            for (int c = 0; c < n; c++) {
+                for (int i = 0; i < n; i++) {
+                    containers[c] += M[c][i];
+                }
+            }
+            
+            Arrays.sort(types);
+            Arrays.sort(containers);
+            final boolean possible = greedy(types, containers);
+            final String answer = possible ? "Possible" : "Impossible";
+            System.out.println(answer);
+        }
+    }
+}
