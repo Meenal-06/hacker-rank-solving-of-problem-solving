@@ -1,0 +1,39 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        Scanner in=new Scanner(System.in);
+        int T=in.nextInt();
+        int M,N,x,y,c;
+        
+        
+        for(int i=0;i<T;i++)
+            {c=0;
+            M=in.nextInt();
+             N=in.nextInt();
+             int ar[]=new int[N];
+             for(int j=0;j<N;j++)
+                 {ar[j]=in.nextInt();}
+             for(int a=0;a<N;a++)
+                 {if(c==1)
+                     {break;}
+                   for(int b=0;b<N;b++)
+                     {
+                      if(b!=a)
+                     {
+                          if((ar[a]+ar[b])==M)
+                     {x=a+1;y=b+1;
+                     if(x>y)
+                {System.out.println(y+" "+x);}
+             else {System.out.println(x+" "+y);}
+                    c=1; }
+                     }
+                     }
+                 }           
+            
+            }        
+    }
+}
