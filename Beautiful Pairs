@@ -1,0 +1,39 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int N = in.nextInt();
+        int[] A = readArray(in, N);
+        int[] B = readArray(in, N);
+        Arrays.sort(A);
+        Arrays.sort(B);
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (i < N && j < N) {
+            if (A[i] < B[j]) i++;
+            else if (A[i] > B[j]) j++;
+            else {
+                i++;
+                j++;
+                count++;
+            }
+        }
+        if (count < N) count++;
+        else count--;
+        System.out.println(count);
+    }
+    
+    public static int[] readArray(Scanner in, int N) {
+        int[] ar = new int[N];
+        for (int i = 0; i < N; i++) {
+            ar[i] = in.nextInt();
+        }
+        return ar;
+    }
+}
+
+{"mode":"full
