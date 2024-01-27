@@ -1,0 +1,16 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int L = in.nextInt();
+        int R = in.nextInt();
+        int ans = Integer.MIN_VALUE;
+        for (int A = L; A <= R; A++)
+            for (int B = A; B <= R; B++)
+                ans = Math.max(ans, A ^ B);
+        System.out.println(ans);
+    }
+}
