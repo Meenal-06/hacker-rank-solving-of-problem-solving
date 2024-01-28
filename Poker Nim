@@ -1,0 +1,24 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        
+        int T = in.nextInt();
+        for (int t = 0; t < T; t++) {
+            int n = in.nextInt();
+            in.nextInt(); // k is irrelevant
+            int res = in.nextInt();
+            for (int i = 1; i < n; i++) {
+                res ^= in.nextInt();
+            }
+            if (res == 0) {
+                System.out.println("Second");
+            } else {
+                System.out.println("First");
+            }
+        }
+    }
+}
