@@ -1,0 +1,64 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+    static int INF=(int)1e9;
+    static String[] neighborS = {"UL", "UR", "R", "LR", "LL", "L"};
+    static int[] neighborI = {-2, -2, 0, 2, 2, 0};
+    static int[] neighborJ = {-1, 1, 2, 1, -1, -2};
+    
+    static void printShortestPath(int n, int i_start, int j_start, int i_end, int j_end) {
+        //  Print the distance along with the sequence of moves.
+        Pair[] q = new Pair[n*n];
+        int qt=0, qh=0;
+        q[qt++]=new Pair(i_start, j_start);
+        int[][] dist = new int[n][n];
+        Pair[][] prev = new Pair[n][n];
+        String[][] prevS = new String[n][n];
+        for(int i=0; i<n; ++i)
+            Arrays.fill(dist[i], INF);
+        dist[i_start][j_start]=0;
+        while(qt>qh) {
+            Pair p = q[qh++];
+            for(int i=0; i<6; ++i) {
+                int nI=p.a+neighborI[i], nJ=p.b+neighborJ[i];
+                if(nI<0||nI>=n||nJ<0||nJ>=n||dist[nI][nJ]<INF)
+                    continue;
+                prevS[nI][nJ]=neighborS[i];
+                prev[nI][nJ] = new Pair(p.a, p.b);
+                dist[nI][nJ]=dist[p.a][p.b]+1;
+                q[qt++]=new Pair(nI, nJ);
+            }
+        }
+        if(dist[i_end][j_end]>=INF)
+            System.out.println("Impossible");
+        else {
+            String s="";
+            for(Pair p=new Pair(i_end, j_end); prev[p.a][p.b]!=null; p=prev[p.a][p.b])
+                s=prevS[p.a][p.b]+" "+s;
+            System.out.println(dist[i_end][j_end]+"\n"+s);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int i_start = in.nextInt();
+        int j_start = in.nextInt();
+        int i_end = in.nextInt();
+        int j_end = in.nextInt();
+        printShortestPath(n, i_start, j_start, i_end, j_end);
+        in.close();
+    }
+    
+    static class Pair {
+        int a, b;
+        Pair(int a, int b) {
+            this.a=a;
+            this.b=b;
+        }
+    }
+}
