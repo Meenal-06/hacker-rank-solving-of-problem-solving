@@ -1,0 +1,123 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int t = in.nextInt();
+        for (int test = 0; test < t; test++) {
+            int n = in.nextInt();
+            int m = in.nextInt();
+            in.nextLine();
+            char[][] matrix = new char[n][m];
+            Queue<Pair> queue = new LinkedList<>();
+            for (int i = 0; i < n; i++) {
+                String line = in.nextLine();
+                matrix[i] = line.toCharArray();
+                for (int j = 0; j < m; j++) {
+                    if (matrix[i][j] == 'M') {
+                        queue.add(new Pair(i, j));
+                        break;
+                    }
+                }
+            }
+            int k = in.nextInt();
+
+            Map<Pair, Integer> map = new HashMap<>();
+            map.put(queue.peek(), 0);
+
+            Queue<Pair> newQueue = new LinkedList<>();
+            while (!queue.isEmpty() && k >= 0) {
+                Pair pair = queue.remove();
+                int x = pair.x;
+                int y = pair.y;
+
+                int wandWaves = map.remove(pair);
+                if (matrix[x][y] == '*') {
+                    k -= wandWaves;
+                    break;
+                }
+
+                if (needsWand(x, y, matrix)) wandWaves++;
+                matrix[x][y] = 'X';
+
+                pushToQueueAndPutToMap(new Pair[] {
+                    new Pair(x, y - 1),
+                    new Pair(x + 1, y),
+                    new Pair(x, y + 1),
+                    new Pair(x - 1, y)
+                }, matrix, newQueue, wandWaves, map);
+
+                if (queue.isEmpty()) {
+                    queue = newQueue;
+                    newQueue = new LinkedList<>();
+                }
+            }
+
+            if (k == 0) {
+                System.out.println("Impressed");
+            } else {
+                System.out.println("Oops!");
+            }
+        }
+    }
+
+    private static boolean needsWand(int x, int y, char[][] matrix) {
+        int count = 0;
+        if (isPath(x, y - 1, matrix)) count++;
+        if (isPath(x + 1, y, matrix)) count++;
+        if (isPath(x, y + 1, matrix)) count++;
+        if (isPath(x - 1, y, matrix)) count++;
+        return count > 1;
+    }
+
+    private static boolean isPath(int x, int y, char[][] matrix) {
+        if (x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length) {
+            return matrix[x][y] != 'X';
+        }
+        return false;
+    }
+
+    private static void pushToQueueAndPutToMap(Pair[] pairs, char[][] matrix, Queue<Pair> queue, int wandWaves, Map<Pair, Integer> map) {
+        for (Pair pair : pairs) {
+            int x = pair.x;
+            int y = pair.y;
+            if (x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length) {
+                if (matrix[x][y] != 'X') {
+                    queue.add(pair);
+                    map.put(pair, wandWaves);
+                }
+            }
+        }
+    }
+
+    private static class Pair {
+        public int x;
+        public int y;
+        public Pair (int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public int hashCode() {
+            int hashCode = 1;
+            hashCode = 31 * hashCode + x;
+            hashCode = 31 * hashCode + y;
+            return hashCode;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (!obj.getClass().equals(this.getClass())) {
+                return false;
+            }
+            return x == ((Pair) obj).x && y == ((Pair) obj).y;
+        }
+    }
+}
+
