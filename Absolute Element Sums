@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+
+        int n = in.nextInt();
+        int[] A = new int[n];
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            A[i] = in.nextInt();
+            sum += A[i];
+        }
+        Arrays.sort(A);
+
+        int q = in.nextInt();
+        long[] values = new long[q];
+        long last = 0;
+        for (int i = 0; i < q; i++) {
+            values[i] = in.nextInt() + last;
+            last = values[i];
+        }
+
+        for (int i = 0; i < q; i++) {
+            if (values[i] >= 0) {
+                long neg = 0;
+                int index = -1;
+                for (int j = 0; A[j] * -1 > values[i]; j++) {
+                    neg += A[j];
+                    index = j;
+                }
+                long res = (values[i] * (index + 1) + neg) * -1 + (values[i] * (n - index - 1) + sum - neg);
+                System.out.println(res);
+            }
+            else {
+                long pos = 0;
+                int index = n;
+                for (int j = n - 1; A[j] * -1 < values[i]; j--) {
+                    pos += A[j];
+                    index = j;
+                }
+                long res = (values[i] * (n - index) + pos) + (values[i] * index + sum - pos) * -1;
+                System.out.println(res);
+            }
+        }
+    }
+    
+}
