@@ -1,0 +1,28 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int t = scan.nextInt();
+
+        for (int i=0; i<t; i++) {
+            int n = scan.nextInt();
+            int m = scan.nextInt();
+            
+            int k = 1;
+            while (k<n && turan(n,k+1)<m)
+                k++;
+            System.out.println(k);
+        }
+    }
+    
+    // returns the maximum number of edges on a graph of size n without producing k-clique
+    static int turan(int n, int k) {
+        int b = n%(k-1);    // # of larger independent sets
+        int a = k-1-b;      // # of smaller independent sets
+        int j = n/(k-1);    // size of smaller sets
+        return j*j*a*(a-1)/2+j*(j+1)*a*b+(j+1)*(j+1)*b*(b-1)/2;
+    }
+}
