@@ -1,0 +1,86 @@
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class Solution {
+	
+	static int N, K;
+	static int num;
+	static LinkedList<Integer>[] adj;
+	static HashSet<Integer>[] outdegree;
+	static HashSet<Integer>[] indegree;
+	
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		int q = input.nextInt();
+		
+		for (int Q = 0; Q < q; Q++) {
+			N = input.nextInt();
+			num = 0;
+			adj = new LinkedList[N]; outdegree = new HashSet[N]; indegree = new HashSet[N];
+			for (int i = 0; i < N; i++) {
+				adj[i] = new LinkedList<Integer>();
+				outdegree[i] = new HashSet<Integer>();
+				indegree[i] = new HashSet<Integer>();
+			}
+			for (int i = 0; i < N - 1; i++) {
+				int v = input.nextInt() - 1;
+				int w = input.nextInt() - 1;
+				adj[v].add(w);
+				adj[w].add(v);
+			}
+			int g = input.nextInt();
+			K = input.nextInt();
+			for (int G = 0; G < g; G++) {
+				int u = input.nextInt() - 1;
+				int v = input.nextInt() - 1;
+				indegree[u].add(v);
+				outdegree[v].add(u);
+			}
+			
+			int v = 0;
+			walk(v, new boolean[N], init(v));
+			int gcd = GCD(N, num);
+			System.out.println((num / gcd) + "/" + (N / gcd));
+		}
+	}
+	
+	static int GCD(int a, int b) {
+		if (a < b)
+			return GCD(b, a);
+		if (b == 0)
+			return a;
+		else
+			return GCD(b, a % b);
+	}
+	
+	static void walk(int v, boolean[] visited, int amount) {
+		visited[v] = true;
+		if (amount >= K) num++;
+		for (int w : adj[v]) {
+			if (!visited[w]) {
+				int temp = amount;
+				if (indegree[v].contains(w)) temp--;
+				if (outdegree[v].contains(w)) temp++;
+				walk(w, visited, temp);
+			}
+		}
+	}
+	
+	static int init(int v) {
+		return dfs(v, new boolean[N]);
+	}
+	
+	static int dfs(int v, boolean[] visited) {
+		visited[v] = true;
+		int k = 0;
+		for (int w : adj[v]) {
+			if (!visited[w]) {
+				k += dfs(w, visited);
+				if (indegree[v].contains(w)) k++;
+			}
+		}
+		return k;
+	}
+}
