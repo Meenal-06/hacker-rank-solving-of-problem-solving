@@ -1,0 +1,99 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.StringJoiner;
+
+public class Solution {
+
+    public static void main(String [] args) throws IOException {
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+        StringBuilder resultBuilder = new StringBuilder();
+        int numberOfTestCases = Integer.parseInt(bufferedReader.readLine());
+        for(int t=0;t<numberOfTestCases;t++) {
+
+            String [] parts = bufferedReader.readLine().split(" ");
+            int numberOfNodes = Integer.parseInt(parts[0]);
+            int numberOfMainRoads = Integer.parseInt(parts[1]);
+
+            HashSet<Integer>[] mainRoadConnections = new HashSet[numberOfNodes + 1];
+            for(int i=0;i<numberOfNodes + 1;i++) {
+                mainRoadConnections[i] = new HashSet();
+            }
+
+            for(int i=0;i<numberOfMainRoads;i++) {
+                parts = bufferedReader.readLine().split(" ");
+                int from = Integer.parseInt(parts[0]);
+                int to = Integer.parseInt(parts[1]);
+
+                mainRoadConnections[from].add(to);
+                mainRoadConnections[to].add(from);
+            }
+
+            int start = Integer.parseInt(bufferedReader.readLine());
+
+            int [] distances = solve(numberOfNodes, mainRoadConnections, start);
+
+            StringJoiner stringJoiner = new StringJoiner(" ");
+            for(int i=1;i<numberOfNodes + 1;i++) {
+                if (i!=start) {
+                    stringJoiner.add(distances[i] + "");
+                }
+            }
+
+            resultBuilder.append(stringJoiner.toString() +"\n");
+        }
+
+        System.out.println(resultBuilder.toString());
+    }
+
+    private static int[] solve(int numberOfNodes, HashSet<Integer>[] mainRoadConnections, int start) {
+
+        boolean visited [] = new boolean[numberOfNodes + 1];
+        int result [] = new int [numberOfNodes + 1];
+        Arrays.fill(result, Integer.MAX_VALUE);
+
+        LinkedList<Node> queue = new LinkedList<>();
+        queue.add(new Node(start, 0));
+
+        HashSet<Integer> notUsed = new HashSet<>();
+        for(int i=1;i<=numberOfNodes;i++) {
+            notUsed.add(i);
+        }
+        notUsed.remove(start);
+
+        while(!queue.isEmpty()) {
+
+            Node top = queue.poll();
+
+            result[top.index] = top.distance;
+
+            HashSet<Integer> forRemove = new HashSet<>();
+            for(Integer i : notUsed) {
+                if (i != top.index && !visited[i] && !mainRoadConnections[top.index].contains(i)) {
+                    visited[i] = true;
+                    forRemove.add(i);
+                    queue.add(new Node(i, top.distance + 1));
+                }
+            }
+
+            notUsed.removeAll(forRemove);
+        }
+
+        return result;
+    }
+
+    private static class Node {
+        int index;
+        int distance;
+
+        public Node(int index, int distance) {
+            this.index = index;
+            this.distance = distance;
+        }
+    }
+}
