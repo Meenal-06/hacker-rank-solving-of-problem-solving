@@ -1,0 +1,99 @@
+import java.io.*;
+import java.math.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    /*
+     * Complete the crabGraphs function below.
+     */
+    static int crabGraphs(int n, int t, int[][] graph) {
+        List<Set<Integer>> adjacency = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adjacency.add(new HashSet<>());
+        }
+        for (int[] edge : graph) {
+            int n1 = edge[0] - 1;
+            int n2 = edge[1] - 1;
+            adjacency.get(n1).add(n2);
+            adjacency.get(n2).add(n1);
+        }
+
+        Deque<Integer> leaves = new ArrayDeque<>();
+        int cover = n;
+        for (int i = 0; i < n; i++) {
+            if (adjacency.get(i).isEmpty()) {
+                cover--;
+            } else if (adjacency.get(i).size() == 1) {
+                leaves.addLast(i);
+            }
+        }
+
+        int[] legs = new int[n];
+        while (!leaves.isEmpty()) {
+            int leaf = leaves.removeFirst();
+            if (legs[leaf] > 0) {
+                continue;
+            }
+
+            if (adjacency.get(leaf).isEmpty()) {
+                cover--;
+            } else {
+                int head = adjacency.get(leaf).stream().findAny().get();
+                legs[head]++;
+                if (legs[head] == t) {
+                    for (int neighbor : adjacency.get(head)) {
+                        adjacency.get(neighbor).remove(head);
+                        if (adjacency.get(neighbor).size() == 1) {
+                            leaves.addLast(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+        return cover;
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int c = scanner.nextInt();
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+        for (int cItr = 0; cItr < c; cItr++) {
+            String[] ntm = scanner.nextLine().split(" ");
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+            int n = Integer.parseInt(ntm[0]);
+
+            int t = Integer.parseInt(ntm[1]);
+
+            int m = Integer.parseInt(ntm[2]);
+
+            int[][] graph = new int[m][2];
+
+            for (int graphRowItr = 0; graphRowItr < m; graphRowItr++) {
+                String[] graphRowItems = scanner.nextLine().split(" ");
+                scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+                for (int graphColumnItr = 0; graphColumnItr < 2; graphColumnItr++) {
+                    int graphItem = Integer.parseInt(graphRowItems[graphColumnItr]);
+                    graph[graphRowItr][graphColumnItr] = graphItem;
+                }
+            }
+
+            int result = crabGraphs(n, t, graph);
+
+            bufferedWriter.write(String.valueOf(result));
+            bufferedWriter.newLine();
+        }
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
