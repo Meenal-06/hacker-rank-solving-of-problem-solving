@@ -1,0 +1,74 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    static int beautifulPath(int[][] edges, int A, int B) {
+		Map<Integer, Set<Edge>> adjacents = makeAdjacencyList(edges);
+        
+        boolean[][] dp = new boolean[1001][1024];
+        
+        dfs(A, 0, adjacents, dp);
+        
+        for(int i=0; i<1024; ++i) {
+            if(dp[B][i]) return i;
+        } 
+        
+        return -1;
+    }
+    
+    private static void dfs(int from, int cost, Map<Integer, Set<Edge>> adjacents, boolean dp[][]) {
+        dp[from][cost]=true;
+        Set<Edge> nextNodes = adjacents.get(from);
+        if(nextNodes != null) {
+            for(Edge e : nextNodes) {
+                int newCost = cost | e.cost;
+                if(!dp[e.target][newCost]) {
+                    dfs(e.target, newCost, adjacents, dp);
+                }
+            }
+        }
+        
+    }
+    
+    private static Map<Integer, Set<Edge>> makeAdjacencyList(int[][] edges) {
+        Map<Integer, Set<Edge>> adjacents = new HashMap<>();
+        for(int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int weight = edge[2];
+            //System.err.format("adding %s,%s = %s\n", u, v, weight);
+            if(!adjacents.containsKey(u)) adjacents.put(u, new HashSet<>());
+            adjacents.get(u).add(new Edge(v,weight));
+            if(!adjacents.containsKey(v)) adjacents.put(v, new HashSet<>());
+            adjacents.get(v).add(new Edge(u,weight));
+        }
+        return adjacents;
+    }
+    
+    private static class Edge {
+        Edge(int target, int cost) {this.target = target; this.cost=cost;}
+        int target;
+        int cost;
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int m = in.nextInt();
+        int[][] edges = new int[m][3];
+        for(int edges_i = 0; edges_i < m; edges_i++){
+            for(int edges_j = 0; edges_j < 3; edges_j++){
+                edges[edges_i][edges_j] = in.nextInt();
+            }
+        }
+        int A = in.nextInt();
+        int B = in.nextInt();
+        int result = beautifulPath(edges, A, B);
+        System.out.println(result);
+        in.close();
+    }
+}
