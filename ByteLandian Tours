@@ -1,0 +1,93 @@
+import java.io.*;
+import java.math.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+    private static final int MODULUS = 1000000007;
+
+    private static class Node {
+        Set<Node> neighbors = new HashSet<>();
+    }
+
+    /*
+     * Complete the bytelandianTours function below.
+     */
+    static int bytelandianTours(int n, int[][] roads) {
+        Node[] nodes = new Node[n];
+        for (int i = 0; i < n; i++) {
+            nodes[i] = new Node();
+        }
+        for (int[] road : roads) {
+            nodes[road[0]].neighbors.add(nodes[road[1]]);
+            nodes[road[1]].neighbors.add(nodes[road[0]]);
+        }
+
+        long result = 1;
+        int nonLeaves = 0;
+        for (Node node : nodes) {
+            if (node.neighbors.size() > 1) {
+                nonLeaves++;
+                int leaves = leafNeighbors(node);
+                if (leaves + 2 < node.neighbors.size()) {
+                    return 0;
+                } else {
+//                    System.out.println(String.format("Multiplying by %d!", node.neighbors.size() - 2));
+                    for (int i = 2; i <= leaves; i++) {
+                        result = (result*i) % MODULUS;
+                    }
+                }
+            }
+        }
+        if (nonLeaves > 1) {
+            result = (result*2) % MODULUS;
+        }
+        return (int) result;
+    }
+
+    private static int leafNeighbors(Node n) {
+        int leaves = 0;
+        for (Node other : n.neighbors) {
+            if (other.neighbors.size() == 1) {
+                leaves++;
+            }
+        }
+        return leaves;
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int t = scanner.nextInt();
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+        for (int tItr = 0; tItr < t; tItr++) {
+            int n = scanner.nextInt();
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+            int[][] roads = new int[n-1][2];
+
+            for (int roadsRowItr = 0; roadsRowItr < n-1; roadsRowItr++) {
+                String[] roadsRowItems = scanner.nextLine().split(" ");
+                scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+                for (int roadsColumnItr = 0; roadsColumnItr < 2; roadsColumnItr++) {
+                    int roadsItem = Integer.parseInt(roadsRowItems[roadsColumnItr]);
+                    roads[roadsRowItr][roadsColumnItr] = roadsItem;
+                }
+            }
+
+            int result = bytelandianTours(n, roads);
+
+            bufferedWriter.write(String.valueOf(result));
+            bufferedWriter.newLine();
+        }
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
