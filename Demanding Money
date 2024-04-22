@@ -1,0 +1,163 @@
+import java.io.*;
+import java.math.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    /*
+     * Complete the demandingMoney function below.
+     */
+    private static long maxMoney = Integer.MIN_VALUE;
+    private static Map<Long, Long> solutions;
+    private static Set<Integer>[] graph;
+    private static int[] moneys;
+    
+    static long[] demandingMoney(int[] inputMoneys, int[][] roads) 
+    {
+        if (inputMoneys == null || inputMoneys.length == 0)
+        {
+            return new long[] {0, 0};
+        }
+        
+        int n = inputMoneys.length;
+        moneys = inputMoneys;
+        graph = new Set[n+1];
+        solutions = new HashMap<>();
+    
+        for (int i = 1; i <= n; i++)
+        {
+            graph[i] = new HashSet<>();
+        }
+        
+        for (int[] road : roads)
+        {
+            int max = road[0] > road[1] ? road[0] : road[1];
+            int min = road[0] > road[1] ? road[1] : road[0];
+            graph[min].add(max);
+            
+            graph[min].add(min);
+            graph[max].add(max);
+        }
+        
+        Set<Integer> visited = new HashSet<>();
+        int soloMoney = 0;
+        int zeroCount = 0;
+        
+        for (int i = 1; i <= n; i++)
+        {
+            if (graph[i].size() == 0)
+            {
+                visited.add(i);
+                soloMoney += moneys[i-1];
+                zeroCount += moneys[i-1] == 0 ? 1 : 0;
+            }
+        }
+        
+        solutions.put(0L, 1L);
+        for (int start = 1; start <= n; start++)
+        {
+            if (!visited.contains(start))
+            {
+                search(start, visited, 0L);
+            }
+        }
+        
+        long result = soloMoney;
+        long count = 1;
+        
+        for (int i = 0; i < zeroCount; i++)
+        {
+            count *= 2L;
+        }
+        
+        if (maxMoney != Integer.MIN_VALUE)
+        {
+            count *= solutions.get(maxMoney);
+            result += maxMoney;
+        }
+        
+        return new long[] { result, count };
+    }
+    
+    private static void search(int start, Set<Integer> visited, long totalMoney)
+    {
+        totalMoney += moneys[start-1];
+        solutions.put(totalMoney, solutions.getOrDefault(totalMoney, 0L) + 1L);
+        maxMoney = Math.max(maxMoney, totalMoney);
+        
+        Set<Integer> removed = new HashSet<>();
+        for (int neighbor : graph[start])
+        {
+            if (!visited.contains(neighbor))
+            {
+                visited.add(neighbor);
+                removed.add(neighbor);
+            }
+        }
+        
+        for (int next = start+1; next <= moneys.length; next++)
+        {
+            if (visited.contains(next))
+            {
+                continue;
+            }
+            
+            search(next, visited, totalMoney);
+        }
+        
+        visited.removeAll(removed);
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String[] nm = scanner.nextLine().split(" ");
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+        int n = Integer.parseInt(nm[0]);
+
+        int m = Integer.parseInt(nm[1]);
+
+        int[] money = new int[n];
+
+        String[] moneyItems = scanner.nextLine().split(" ");
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+        for (int moneyItr = 0; moneyItr < n; moneyItr++) {
+            int moneyItem = Integer.parseInt(moneyItems[moneyItr]);
+            money[moneyItr] = moneyItem;
+        }
+
+        int[][] roads = new int[m][2];
+
+        for (int roadsRowItr = 0; roadsRowItr < m; roadsRowItr++) {
+            String[] roadsRowItems = scanner.nextLine().split(" ");
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+            for (int roadsColumnItr = 0; roadsColumnItr < 2; roadsColumnItr++) {
+                int roadsItem = Integer.parseInt(roadsRowItems[roadsColumnItr]);
+                roads[roadsRowItr][roadsColumnItr] = roadsItem;
+            }
+        }
+
+        long[] result = demandingMoney(money, roads);
+
+        for (int resultItr = 0; resultItr < result.length; resultItr++) {
+            bufferedWriter.write(String.valueOf(result[resultItr]));
+
+            if (resultItr != result.length - 1) {
+                bufferedWriter.write(" ");
+            }
+        }
+
+        bufferedWriter.newLine();
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
