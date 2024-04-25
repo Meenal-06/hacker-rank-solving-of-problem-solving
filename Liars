@@ -1,0 +1,119 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Solution {
+
+    static int findMax(int n, int[][] sets, boolean opposite) {
+        final Map<Integer, Integer>[] ws = new Map[n + 1];
+        for (int i = 0; i <= n; i++) {
+            ws[i] = new HashMap<>(n);
+        }
+        for (int i = 0; i < n; i++) {
+            ws[i].put(i + 1, 1);
+            ws[i + 1].put(i, 0);
+        }
+        if (opposite) {
+            for (int[] s : sets) {
+                int w = s[1] - s[0] - s[2] + 1;
+                ws[s[0] - 1].put(s[1], w);
+                ws[s[1]].put(s[0] - 1, -w);
+            }
+        } else {
+            for (int[] s : sets) {
+                ws[s[0] - 1].put(s[1], s[2]);
+                ws[s[1]].put(s[0] - 1, -s[2]);
+            }
+        }
+
+        return minPath(ws);
+    }
+
+    static int minPath(Map<Integer,Integer>[] ws){
+        int n = ws.length;
+        int[] d = new int[n];
+        Arrays.fill(d, Short.MAX_VALUE);
+        d[0] = 0;
+
+        boolean[] state = new boolean[n];
+
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        while (!q.isEmpty()){
+            int v = q.poll();
+            state[v] = false;
+            for(AbstractMap.Entry<Integer, Integer> jw: ws[v].entrySet()){
+                int j = jw.getKey();
+                int w = d[v]+jw.getValue();
+                if(w < d[j]){
+                    d[j] = w;
+                    if (!state[j]){
+                        state[j] = true;
+                        q.add(j);
+                    }
+                }
+            }
+        }
+        return d[n-1];
+    }
+
+    /*
+     * Complete the liars function below.
+     */
+    static int[] liars(int n, int[][] sets) {
+        int min = n - findMax(n, sets, true);
+        int max = findMax(n, sets, false);
+
+        return new int[]{min, max};
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String[] nm = scanner.nextLine().split(" ");
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+        int n = Integer.parseInt(nm[0]);
+
+        int m = Integer.parseInt(nm[1]);
+
+        int[][] sets = new int[m][3];
+
+        for (int setsRowItr = 0; setsRowItr < m; setsRowItr++) {
+            String[] setsRowItems = scanner.nextLine().split(" ");
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])*");
+
+            for (int setsColumnItr = 0; setsColumnItr < 3; setsColumnItr++) {
+                int setsItem = Integer.parseInt(setsRowItems[setsColumnItr]);
+                sets[setsRowItr][setsColumnItr] = setsItem;
+            }
+        }
+
+        int[] result = liars(n, sets);
+
+        for (int resultItr = 0; resultItr < result.length; resultItr++) {
+            bufferedWriter.write(String.valueOf(result[resultItr]));
+
+            if (resultItr != result.length - 1) {
+                bufferedWriter.write(" ");
+            }
+        }
+
+        bufferedWriter.newLine();
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
