@@ -1,0 +1,94 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.Scanner;
+import java.util.TreeSet;
+
+public class Solution {
+    public static final int MAXN = 1000000;
+        public static void main(String[] args) {
+                int[] cnt = new int[MAXN+1];
+                int[] pcnt = new int[MAXN+1];
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+                TreeSet<Integer> tree = new TreeSet<Integer>();
+                Scanner sc = new Scanner(System.in);
+                int N = sc.nextInt();
+                int[][] A = new int[N][];
+                int pnum = 0;
+                int mp = 0;
+                for (int i = 0; i < N; ++i) {
+                        int M = sc.nextInt();
+                        int[] AM = new int[M];
+                        A[i] = AM;
+                        pnum = 0;
+                        for (int j = 0; j < M; ++j) {
+                                cnt[pnum] += 1;
+                                pnum = sc.nextInt();
+                                AM[j] = pnum;
+                                pcnt[pnum]++;
+                                if (pnum > mp) {
+                                        mp = pnum;
+                                }
+                        }
+                }
+                int[][] B = new int[mp + 1][];
+                B[0] = new int[N];
+                int[] BP = new int[mp + 1];
+                for (int i = 0; i <= mp; ++i) {
+                        B[i] = new int[cnt[i]];
+                }
+                
+                for (int i = 0; i < N; ++i) {
+                        int M = A[i].length;
+                        int[] AM = A[i];
+                        pnum = 0;
+                        int[] Bpnum = B[pnum];
+                        for (int j = 0; j < M; ++j) {
+                                int AMj = AM[j];
+                                Bpnum[BP[pnum]++] = AMj;
+                                pnum = AMj;
+                                Bpnum = B[pnum];
+                        }
+                }
+                
+                for(int i=0;i<B[0].length;++i) {
+                        pcnt[B[0][i]]--;
+                }
+                
+                for (int i = 1; i <= mp; ++i) {
+                        if(cnt[i]>0 || pcnt[i]>0) {
+                                tree.add((i - 1) + pcnt[i] * MAXN);
+                        }
+                }                
+                
+                try {
+                        boolean first = true;
+                        while (true) {
+                                Integer t = tree.pollFirst();
+                                if (t == null) {
+                                        break;
+                                }
+                                int tv = t % MAXN + 1;
+                                if(first) {
+                                        first = false;
+                                }else {
+                                        bw.write(' ');
+                                }
+                                bw.write(Integer.toString(tv));
+                                int[] Btv = B[tv];
+                                for (int i = 0; i < Btv.length; ++i) {
+                                        assert(pcnt[Btv[i]]>0);
+                                        tree.remove((Btv[i] - 1) + (pcnt[Btv[i]]--) * MAXN);
+                                        tree.add((Btv[i] - 1) + (pcnt[Btv[i]]) * MAXN);
+                                }
+                        }
+                } catch (IOException e) {
+                }finally {
+                        try {
+                                bw.close();
+                        } catch (IOException e) {
+                                e.printStackTrace();
+                        }
+                }
+        }
+}
