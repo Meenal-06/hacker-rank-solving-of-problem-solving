@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+
+public class lena_sort extends PrintWriter {
+    lena_sort() { super(System.out); }
+    Scanner sc = new Scanner(System.in);
+    public static void main(String[] $) {
+        lena_sort o = new lena_sort(); o.main(); o.flush();
+    }
+
+    static final int N = 100000;
+    int[] kk = new int[N + 1];
+    int[] aa = new int[N];
+    void init() {
+        for (int n = 2; n <= N; n++) {
+            int p = (n - 1) / 2, q = n - 1 - p;
+            kk[n] = kk[p] + kk[q] + n - 1;
+        }
+    }
+    void solve(int l, int r, int a, int c) {
+        int n = r - l;
+        if (n == 0)
+            return;
+        c -= n - 1;
+        int lower = -1, upper = (n - 1) / 2, p, q;
+        while (upper - lower > 1) {
+            p = lower + upper >> 1;
+            q = n - 1 - p;
+            if (kk[p] + kk[q] <= c)
+                upper = p;
+            else
+                lower = p;
+        }
+        p = upper;
+        q = n - 1 - p;
+        aa[l] = a + p;
+        int cp = (int) Math.max(kk[p], c - (long) q * (q - 1) / 2), cq = c - cp;
+        solve(l + 1, l + 1 + p, a, cp);
+        solve(l + 1 + p, r, a + p + 1, cq);
+    }
+    void main() {
+        init();
+        int q = sc.nextInt();
+        while (q-- > 0) {
+            int n = sc.nextInt();
+            int c = sc.nextInt();
+            if (c < kk[n] || (long) n * (n - 1) / 2 < c) {
+                println(-1);
+                continue;
+            }
+            solve(0, n, 1, c);
+            for (int i = 0; i < n; i++)
+                print(aa[i] + " ");
+            println();
+        }
+    }
+}
