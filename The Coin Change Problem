@@ -1,0 +1,85 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+    
+   public static class MyScanner {
+      BufferedReader br;
+      StringTokenizer st;
+ 
+      public MyScanner() {
+         br = new BufferedReader(new InputStreamReader(System.in));
+      }
+ 
+      String next() {
+          while (st == null || !st.hasMoreElements()) {
+              try {
+                  st = new StringTokenizer(br.readLine());
+              } catch (IOException e) {
+                  e.printStackTrace();
+              }
+          }
+          return st.nextToken();
+      }
+ 
+      int nextInt() {
+          return Integer.parseInt(next());
+      }
+ 
+      long nextLong() {
+          return Long.parseLong(next());
+      }
+ 
+      double nextDouble() {
+          return Double.parseDouble(next());
+      }
+ 
+      String nextLine(){
+          String str = "";
+	  try {
+	     str = br.readLine();
+	  } catch (IOException e) {
+	     e.printStackTrace();
+	  }
+	  return str;
+      }
+
+   }
+   
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        MyScanner sc = new MyScanner();
+        PrintWriter out = new PrintWriter(new BufferedOutputStream(System.out));
+        
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        
+        long table[][] = new long[n+10][m+10];
+        int coinvalues[] = new int[m+10];
+        long noexchange[] = new long[n+10];
+        
+        for (int i=1;i<=m;i++) {
+            coinvalues[i] = sc.nextInt();
+        }
+        
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= m; j++) {
+                if(i==0){
+                    table[i][j] = 1;
+                }
+                else if(j==0){
+                    table[i][j] = 0;
+                }
+                else if(coinvalues[j] > i) {
+                    table[i][j] = table[i][j-1];
+                }
+                else {
+                    table[i][j] = table[i-coinvalues[j]][j] + table[i][j-1];
+                }
+            }
+        }
+        out.println(table[n][m]);
+        out.close();
+    }
+    
+}
