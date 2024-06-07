@@ -1,0 +1,43 @@
+import java.io.*;
+import java.util.*;
+import java.math.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        Scanner in = new Scanner(System.in);
+        int T = in.nextInt();
+        long[] result = new long[100000];
+        for (int t = 0; t < T; t++) {
+            long n = in.nextLong();
+            long k = in.nextLong();
+            int b = in.nextInt();
+            long minSum = (long) (1 + b) * b / 2;
+            BigInteger maxSum = BigInteger.valueOf(k + k - (b - 1)).multiply(BigInteger.valueOf(b)).divide(BigInteger.valueOf(2));
+            if (n < minSum || BigInteger.valueOf(n).compareTo(maxSum) > 0) {
+                System.out.println(-1);
+            } else {
+                long div = (n - minSum) / b;
+                int mod = (int) ((n - minSum) % b);
+                for (int i = 0; i < b; i++) {
+                    result[i] = i + 1 + div;
+                }
+                
+                if (mod != 0) {
+                    long next = result[b - 1] + 1;
+                    result[b - mod] = next;
+                }
+                
+                StringBuilder out = new StringBuilder();
+                for (int i = 0; i < b; i++) {
+                    if (i > 0) {
+                        out.append(" ");
+                    }
+                    out.append(result[i]);
+                }
+                System.out.println(out.toString());
+            }
+        }
+    }
+}
