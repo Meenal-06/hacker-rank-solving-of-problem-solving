@@ -1,0 +1,136 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int max = 600000;
+        int size = 20;
+        
+        int[] counter = new int[max];
+        long[] fresh = new long[max];
+        long[] sum = new long[max];
+        long[] finder = new long[max];
+        
+        int[][] prev = new int[max][size];
+        long[][] high = new long[max][size];
+        long[][] el = new long[max][size];
+        
+        sum[0] = 1;
+        int u = 1;
+        long t = 1;
+        
+        for(int i = 0; i < 20; i++) {
+            int last = Math.min(20 * u, max);
+                
+            
+                
+                for(int k = 1; k < 10; k++) {
+                    for(int j = 0; j < last; j++) {
+                if(sum[j] == 0) {
+                    continue;
+                }
+                        
+                    int n = k * u + j;
+                    
+                    if(n >= max) {
+                        break;
+                    }
+                    
+                    int p = counter[n];
+                    
+                    fresh[n] += sum[j];
+                    prev[n][p] = j;
+                    //data[n][p] = sum[j];
+                    high[n][p] = sum[n] + fresh[n];
+                    
+                    el[n][p] = (long)k * t;
+                    counter[n] = p + 1;
+                }
+            }
+            
+            for(int j = 0; j < max; j++) {
+                sum[j] += fresh[j];
+                fresh[j] = 0;
+            }
+            
+            u *= 2;
+            t *= 10;
+        }
+        
+        finder[0] = 1;
+        
+        for(int i = 1; i < max; i++) {
+            finder[i] = finder[i - 1] + sum[i];
+        }
+        
+        int count = sc.nextInt();
+        long[] tab;
+        StringBuilder builder = new StringBuilder();
+        
+        for(int q = 0; q < count; q++) {
+            long p = sc.nextLong();
+            
+            if(p == 1) {
+                builder.append("0\n");
+                continue;
+            }
+            
+            int x = find(finder, 1, max - 1, p);
+            int y = 0;
+            int k = 0;
+            
+            long s = sum[x];
+            long res = 0;
+            p -= finder[x - 1];
+            
+            while(true) {
+                tab = high[x];
+                k = counter[x];
+                y = find(tab, 0, k - 1, p);
+                
+                res += el[x][y];
+                x = prev[x][y];
+                
+                if(x == 0) {
+                    builder.append(res);
+                    builder.append('\n');
+                    break;
+                }
+                
+                if(y > 0) {
+                    p -= tab[y - 1];
+                }
+            }
+        }
+        
+        System.out.println(builder.toString());
+    }
+    
+    static int find(long[] tab, int a, int b, long n) {
+        if(a == b) {
+            return a;
+        }
+        
+        if(b - a == 1) {
+            if(n > tab[a]) {
+                return b;
+            }
+            
+            return a;
+        }
+        
+        int k = (a + b) / 2;
+        
+        if(n > tab[k]) {
+            return find(tab, k + 1, b, n);
+        }
+        else {
+            return find(tab, a, k, n);
+        }
+    }
+}
