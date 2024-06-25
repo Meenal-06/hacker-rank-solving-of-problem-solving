@@ -1,0 +1,52 @@
+import java.io.*;
+import java.util.*;
+
+public class two_robots extends PrintWriter {
+    two_robots() { super(System.out); }
+    Scanner sc = new Scanner(System.in);
+    public static void main(String[] $) {
+        two_robots o = new two_robots(); o.main(); o.flush();
+    }
+
+    static final int INF = 0x3f3f3f3f;
+    void main() {
+        int t = sc.nextInt();
+        while (t-- > 0) {
+            int m = sc.nextInt();
+            int n = sc.nextInt();
+            int[] aa = new int[n];
+            int[] bb = new int[n];
+            for (int i = 0; i < n; i++) {
+                aa[i] = sc.nextInt();
+                bb[i] = sc.nextInt();
+            }
+            int[] dd = new int[n];
+            dd[0] = Math.abs(aa[0] - bb[0]);
+            for (int i = 1; i < n; i++)
+                dd[i] = dd[i - 1] + Math.abs(bb[i - 1] - aa[i]) + Math.abs(aa[i] - bb[i]);
+            int ans = dd[n - 1];
+            int[][] dp = new int[n][m + 1];
+            for (int i = 0; i < n; i++)
+                for (int x = 1; x <= m; x++)
+                    dp[i][x] = INF;
+            for (int u = 1; u < n; u++)
+                for (int v = 1; u + v <= n; v++) {
+                    int i = u + v - 1;
+                    int x = bb[u - 1];
+                    dp[i][x] = Math.min(dp[i][x], dd[u + v - 1] - Math.abs(bb[u - 1] - aa[u]));
+                }
+            for (int i = 0; i < n - 1; i++)
+                for (int x = 1; x <= m; x++) {
+                    int d = dp[i][x];
+                    if (d == INF)
+                        continue;
+                    int y = bb[i];
+                    dp[i + 1][x] = Math.min(dp[i + 1][x], d + Math.abs(y - aa[i + 1]) + Math.abs(aa[i + 1] - bb[i + 1]));
+                    dp[i + 1][y] = Math.min(dp[i + 1][y], d + Math.abs(x - aa[i + 1]) + Math.abs(aa[i + 1] - bb[i + 1]));
+                }
+            for (int x = 1; x <= m; x++)
+                ans = Math.min(ans, dp[n - 1][x]);
+            println(ans);
+        }
+    }
+}
