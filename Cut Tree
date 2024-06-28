@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+
+public class cuttree extends PrintWriter {
+    cuttree() { super(System.out, true); }
+    Scanner sc = new Scanner(System.in);
+    public static void main(String[] $) {
+        cuttree o = new cuttree(); o.main(); o.flush();
+    }
+
+    int[] eo; int[][] ej;
+    void append(int i, int j) {
+        int o = eo[i]++;
+        if (o >= 2 && (o & o - 1) == 0)
+            ej[i] = Arrays.copyOf(ej[i], o << 1);
+        ej[i][o] = j;
+    }
+    long[][] dp; long[] tt; int k;
+    void init(int n) {
+        eo = new int[n]; ej = new int[n][2];
+        dp = new long[n][k + 1]; tt = new long[k + 1];
+    }
+    void mult(long[] aa, long[] bb) {
+        Arrays.fill(tt, 0);
+        for (int i = 0; i <= k; i++)
+            for (int j = 0; i + j <= k; j++)
+                tt[i + j] += aa[i] * bb[j];
+        System.arraycopy(tt, 0, aa, 0, k + 1);
+    }
+    long ans = 1;
+    void dfs(int p, int i) {
+        dp[i][0] = 1;
+        for (int o = eo[i]; o-- > 0; ) {
+            int j = ej[i][o];
+            if (j != p) {
+                dfs(i, j);
+                dp[j][1]++;
+                mult(dp[i], dp[j]);
+            }
+        }
+        for (int h = p == -1 ? k : k - 1; h >= 0; h--)
+            ans += dp[i][h];
+    }
+    void main() {
+        int n = sc.nextInt();
+        if (n == 1) {
+            println(2);
+            return;
+        }
+        k = sc.nextInt();
+        if (k == n)
+            k = n - 1;
+        init(n);
+        for (int h = 0; h < n - 1; h++) {
+            int i = sc.nextInt() - 1;
+            int j = sc.nextInt() - 1;
+            append(i, j);
+            append(j, i);
+        }
+        dfs(-1, 0);
+        println(ans);
+    }
+}
