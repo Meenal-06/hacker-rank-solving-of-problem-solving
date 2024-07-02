@@ -1,0 +1,102 @@
+import java.io.*;
+import java.math.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    
+    static long[][] c;
+    
+    static void initBinomials(long mod, int m) {
+        c = new long[m + 1][m + 1];
+        c[0][0] = 1;
+        for (int i = 0; i <= m; i++) {
+            c[i][0] = 1;
+            for (int j = 1; j <= i; j++) {
+                c[i][j] = (c[i - 1][j - 1] + c[i - 1][j]) % mod;
+            }
+        }
+    }
+    
+    public static long[] ways(long mod, int x, int d, int m) {
+        long[] w = new long[m + 1];
+        long[] p = new long[d];
+        p[x - 1] = 1;
+        w[0] = 1;
+        for (int t = 1; t <= m; t++) {
+            long[] p1 = new long[d];
+            for (int i = 0; i < p1.length; i++) {
+                if (i > 0) p1[i] = (p1[i] + p[i - 1]) % mod;
+                if (i + 1 < d) p1[i] = (p1[i] + p[i + 1]) % mod;
+            }
+            p = p1;
+            for (int i = 0; i < d; i++) w[t] = (w[t] + p[i]) % mod;
+        }        
+        return w;
+    }
+
+    static long[] apply(long mod, long[] W, long[] w) {
+        long[] R = new long[W.length];
+        for (int i = 0; i < W.length; i++) {
+            for (int j = 0; i + j < W.length; j++) {
+                long p = (w[i] * W[j]) % mod;
+                R[i + j] = (R[i + j] + p * c[i + j][i]) % mod;
+            }
+        }
+        return R;
+    }
+
+    static int gridWalking(int m, int[] x, int[] D) {
+        long mod = 1000_000_007;
+        initBinomials(mod, m);
+        long[] W = ways(mod, x[0], D[0], m);
+        for (int i = 1; i < D.length; i++) {
+            long[] w = ways(mod, x[i], D[i], m);
+            W = apply(mod, W, w);
+        }
+        return (int)W[m];
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int t = Integer.parseInt(scanner.nextLine().trim());
+
+        for (int tItr = 0; tItr < t; tItr++) {
+            String[] nm = scanner.nextLine().split(" ");
+
+            int n = Integer.parseInt(nm[0].trim());
+
+            int m = Integer.parseInt(nm[1].trim());
+
+            int[] x = new int[n];
+
+            String[] xItems = scanner.nextLine().split(" ");
+
+            for (int xItr = 0; xItr < n; xItr++) {
+                int xItem = Integer.parseInt(xItems[xItr].trim());
+                x[xItr] = xItem;
+            }
+
+            int[] D = new int[n];
+
+            String[] DItems = scanner.nextLine().split(" ");
+
+            for (int DItr = 0; DItr < n; DItr++) {
+                int DItem = Integer.parseInt(DItems[DItr].trim());
+                D[DItr] = DItem;
+            }
+
+            int result = gridWalking(m, x, D);
+
+            bufferedWriter.write(String.valueOf(result));
+            bufferedWriter.newLine();
+        }
+
+        bufferedWriter.close();
+    }
+}
