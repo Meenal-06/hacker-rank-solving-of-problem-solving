@@ -1,0 +1,42 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        Scanner sc=new Scanner(System.in);
+        int T=sc.nextInt();
+        int ar[]=new int[41];
+        ar[1]=1;
+        ar[2]=1;
+        ar[3]=1;
+        ar[4]=2;
+        for(int i=5;i<=40;i++) {
+            ar[i]=ar[i-4]+ar[i-1];
+        }
+        int x=ar[40];
+        boolean prime[]=new boolean[(int)x+1];
+        for(int i=2;i<=x;i++) {
+            prime[i]=true;
+        }
+        for(int i=2;i<=Math.sqrt(x+1);i++) {
+            if(prime[i]) {
+                for(int j=i*i;j<=x;j+=i) {
+                    prime[j]=false;
+                }
+            }
+        }
+        int cnt[]=new int[(int)(x+1l)];
+        for(int i=2;i<=x;i++)
+        {
+            if(prime[i])
+                cnt[i]=1;
+            cnt[i]+=cnt[i-1];
+        }
+        while(T-->0) {
+            int n=sc.nextInt();
+            System.out.println(cnt[ar[n]]);
+        }
+    }
+}
