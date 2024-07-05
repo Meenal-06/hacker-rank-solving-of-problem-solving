@@ -1,0 +1,39 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    static int max;
+    static int a[];
+    static long b[];
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int t=sc.nextInt();
+        while(t!=0){
+            t--;
+        int n=sc.nextInt();
+        a=new int[n];
+        b=new long[n];
+            int c[]=new int[n];
+            long dp[]=new long[n];
+        max=0;
+        long s=0;
+            for(int i=0;i<n;i++){
+                c[i]=sc.nextInt();
+            }
+        for(int i=0;i<n;i++){
+            a[i]=c[n-1-i];
+            s=s+a[i];
+            b[i]=s;
+            if(i<=2)
+                dp[i]=b[i];
+            else{
+                dp[i]=Math.max((a[i]+a[i-1]+a[i-2]+b[i-3]-dp[i-3]),((a[i]+a[i-1]+b[i-2]-dp[i-2])));
+                dp[i]=Math.max(dp[i],a[i]+b[i-1]-dp[i-1]);
+            }
+        }
+        System.out.println(dp[n-1]);
+        }
+    }
+
+}
