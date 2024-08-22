@@ -1,0 +1,27 @@
+class Solution {
+    public int findComplement(int num) {
+       int complement = 0; 
+        boolean significantBitFound = false; 
+      
+       
+        for (int i = 30; i >= 0; i--) {
+            int bit = num & (1 << i); 
+          
+            
+            if (!significantBitFound && bit == 0) {
+                continue;
+            }
+          
+            
+            significantBitFound = true;
+          
+            
+            if (bit == 0) {
+                complement |= (1 << i);
+            }
+            
+        }
+      
+        return complement; 
+    }
+}
